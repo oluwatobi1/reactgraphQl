@@ -7,7 +7,26 @@ import { ButtonGroup } from '@material-ui/core';
 import { Checkbox } from '@material-ui/core';
 import { useState } from 'react';
 import { FormControlLabel } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 
+
+const useStyle = makeStyles({
+  root:{
+    background: 'linear-gradient(45deg, #fff, #999)',
+    border:0,
+    borderRadius: 15,
+    color: 'white',
+    padding: '0, 30px'
+  }
+})
+
+function ButtonStyled(){
+  const classes = useStyle()
+  return (
+    <Button className={classes.root}>A styled button</Button>
+  )
+}
 
 function CheckBoxExample(){
   const [checked, setchecked] = useState(false)
@@ -17,6 +36,8 @@ function CheckBoxExample(){
         <Checkbox
         checked={checked}
         onChange={(e)=>setchecked(e.target.checked)}
+        icon = {<SaveIcon/>}
+        checkedIcon={<SaveIcon/>}
         inputProps={{
           "aria-label": 'secondary checkbox'
         }}
@@ -32,6 +53,13 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <ButtonStyled/>
+        <TextField
+          variant="outlined"
+          color="secondary"
+          type="name"
+          label="Your First Name"
+        />
         <CheckBoxExample>
         </CheckBoxExample>
         <ButtonGroup>
