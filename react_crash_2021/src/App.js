@@ -1,14 +1,38 @@
+import Header from "./component/Header";
+import React from 'react'
 
-function App() {
-  const name = "Oluwatobi"
-  const item = true;
+
+
+// // Using normal functions
+// function App() {
+//   return (
+//     <div className="container">
+//       <Header/>
+//     </div>
+//   );
+// }
+
+
+// // Using arrow functions
+const App = ()=>{
   return (
     <div className="container">
-      <h1>This is a react app</h1>
-      <h2> My name is {name}</h2>
-      <p>This is a tenary of {item ? 'Yes': 'NO'}</p>
+      <Header title="Task Tracker"/>
     </div>
-  );
+  )
 }
+
+
+// // Using classes
+// class App extends React.Component {
+//   render() {
+//     return (
+//       <div className="container">
+//         <Header />
+//       </div>
+//     )
+//   }
+// }
+
 
 export default App;
