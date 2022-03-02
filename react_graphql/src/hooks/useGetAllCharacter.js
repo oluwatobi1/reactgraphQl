@@ -14,7 +14,7 @@ query {
 }
 `
 
-const useCharacters = () => {
+const useGetAllCharacters = () => {
     const { error, loading, data } = useQuery(GET_CHARACTERS)
     return {
         error,
@@ -23,4 +23,4 @@ const useCharacters = () => {
     }
 
 };
-export default useCharacters;
+export default useGetAllCharacters;
