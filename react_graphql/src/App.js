@@ -1,10 +1,10 @@
 import './App.css';
-import CharacterLists from './views/CharacterLists';
+import CharactersLists from './views/CharactersLists';
 
 function App() {
   return (
     <div className="App">
-      <CharacterLists/>
+      <CharactersLists/>
     </div>
   );
 }
