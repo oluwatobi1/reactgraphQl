@@ -9,7 +9,7 @@ const initialState = {
 }
 const MAX_CLAP_STATE = 10
 // custom hook
-const useDOMRef = ()=>{
+const useDOMRef = () => {
     const [DOMRef, setRefs] = React.useState({});
     const setAllRef = React.useCallback(
         node => {
@@ -20,28 +20,51 @@ const useDOMRef = ()=>{
 
     return [DOMRef, setAllRef]
 }
-
-const MediumClap = () => {
+const useClapState = () => {
     const [clapState, setClapState] = React.useState(initialState);
     const {count, totalCount, isClicked} = clapState
 
+
+    const updateClapState = React.useCallback(() => {
+            setClapState(({count, totalCount}) => ({
+                count: Math.min(count + 1, MAX_CLAP_STATE),
+                totalCount: count < MAX_CLAP_STATE ? totalCount + 1 : totalCount,
+                isClicked: true
+            }))
+        }, [count, totalCount]
+    )
+
+    return [clapState, updateClapState]
+
+}
+
+const useEffectAfterMount = (cb, dep) => {
+    const componentFirstMount = React.useRef(true);
+    React.useEffect(() => {
+        if (!componentFirstMount.current) {
+            return cb()
+        }
+        componentFirstMount.current = false
+    }, dep);
+
+}
+
+const MediumClap = () => {
     const [{clapRef, clapCountRef, clapTotalRef}, setAllRef] = useDOMRef();
+    const [clapState, updateClapState] = useClapState();
+
+    const {count, totalCount, isClicked} = clapState
     const animationTimeline = useClapAnimation({
         clapRef, clapCountRef, clapTotalRef
     })
+    useEffectAfterMount(
+        ()=>{
+            animationTimeline.replay()
+        },[count]
+    )
 
-    const handleClapClick = () => {
-        animationTimeline.replay();
-        setClapState(prev => ({
-            count: Math.min(prev.count + 1, MAX_CLAP_STATE),
-            totalCount: prev.count < MAX_CLAP_STATE ? prev.totalCount + 1 : prev.totalCount,
-            isClicked: true
-        }))
-
-
-    }
     return <button ref={setAllRef} data-refkey="clapRef" id="clap-btn" className={styles.clap}
-                   onClick={handleClapClick}>
+                   onClick={updateClapState}>
         <ClapIcon isClicked={isClicked} setAllRef={setAllRef}/>
         <ClapCount count={count} setAllRef={setAllRef}/>
         <ClapTotal totalCount={totalCount} setAllRef={setAllRef}/>
