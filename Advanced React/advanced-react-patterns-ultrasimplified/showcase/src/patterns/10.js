@@ -21,7 +21,7 @@ const useDOMRef = () => {
 
     return [DOMRef, setAllRef]
 }
-const reducer = ({count, totalCount}, {type, payload}) => {
+const internalReducer = ({count, totalCount}, {type, payload}) => {
     switch (type) {
         case "clap":
             return {
@@ -37,7 +37,7 @@ const reducer = ({count, totalCount}, {type, payload}) => {
     }
 
 }
-const useClapState = (initialState = INITIALSTATE) => {
+const useClapState = (initialState = INITIALSTATE, reducer = internalReducer) => {
     const [clapState, dispatch] = React.useReducer(reducer, initialState);
     const userInitialState = React.useRef(initialState);
     const {count, totalCount, } = clapState
@@ -77,6 +77,11 @@ const useClapState = (initialState = INITIALSTATE) => {
 
     return {clapState, updateClapState, getTogglerProps, getCounterProps, reset, resetDep:resetRef.current}
 
+}
+useClapState.reducer = internalReducer;
+useClapState.types = {
+    clap: "clap",
+    reset: 'reset'
 }
 
 const useEffectAfterMount = (cb, dep) => {
@@ -216,13 +221,24 @@ const userInitialState = {
 
 const Usage = () => {
     const [{clapRef, clapCountRef, clapTotalRef}, setAllRef] = useDOMRef();
-    const {clapState, updateClapState, getTogglerProps, getCounterProps, reset, resetDep} = useClapState(userInitialState);
+    const [timesClapped, setTimesClapped] = React.useState(0);
+    const hasClappedTooMuch = timesClapped>=7;
+    const userReducer = (state, action)=>{
+        if (action.type === useClapState.types.clap && hasClappedTooMuch){
+            return state
+        }
+        return useClapState.reducer(state, action);
+
+    }
+    const {clapState, updateClapState, getTogglerProps, getCounterProps, reset, resetDep} = useClapState(userInitialState, userReducer);
 
     const {count, totalCount, isClicked} = clapState
     const animationTimeline = useClapAnimation({
         clapRef, clapCountRef, clapTotalRef
     })
+
     const handleClick = ()=>{
+        setTimesClapped(t=>t+1);
         console.log("clicked here")
     }
     useEffectAfterMount(
@@ -234,6 +250,7 @@ const Usage = () => {
     const [uploadingReset, setUploadingReset] = React.useState(false);
     useEffectAfterMount(()=>{
         setUploadingReset(true)
+        setTimesClapped(0)
         const id = setTimeout(()=>{setUploadingReset(false)}, 3000)
         return ()=>{
             clearTimeout(id);
@@ -259,6 +276,9 @@ const Usage = () => {
         </pre>
         <pre className={userStyles.resetMsg}>
             {uploadingReset?`Uploading  ${resetDep}....`:"" }
+        </pre>
+<pre className={{color: "red"}}>
+            {hasClappedTooMuch?`You have clapped too much..`:"" }
         </pre>
 
     </div>
