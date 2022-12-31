@@ -1,8 +1,9 @@
 import React from "react";
 import mojs from "mo-js";
 import styles from "./index.css";
+import userStyles from "./usage.css"
 
-const initialState = {
+const INITIALSTATE = {
     count: 1,
     totalCount: 232,
     isClicked: false
@@ -20,9 +21,22 @@ const useDOMRef = () => {
 
     return [DOMRef, setAllRef]
 }
-const useClapState = () => {
+const useClapState = (initialState = INITIALSTATE) => {
     const [clapState, setClapState] = React.useState(initialState);
+    const userInitialState = React.useRef(initialState);
     const {count, totalCount, } = clapState
+    const prevCount = usePrevious(count)
+    const resetRef = React.useRef(0)
+    const reset = React.useCallback(
+        () => {
+            if (prevCount!==count) {
+                setClapState(userInitialState.current)
+                resetRef.current++
+            }
+        },
+        [setClapState, prevCount, count],
+    );
+
 
 
     const updateClapState = React.useCallback(() => {
@@ -49,7 +63,7 @@ const useClapState = () => {
         ...props
     })
 
-    return {clapState, updateClapState, getTogglerProps, getCounterProps}
+    return {clapState, updateClapState, getTogglerProps, getCounterProps, reset, resetDep:resetRef.current}
 
 }
 
@@ -64,9 +78,15 @@ const useEffectAfterMount = (cb, dep) => {
 
 }
 
-const MediumClap = () => {
 
+const usePrevious = (state) => {
+    const ref = React.useRef();
+    React.useEffect(() => {
+        ref.current = state;
+    });
+    return ref.current;
 }
+
 
 const useClapAnimation = ({
                               clapRef, clapCountRef, clapTotalRef
@@ -176,9 +196,15 @@ const ClapContainer = ({children, setAllRef, handleClick, ...restProps}) => {
     </button>
 }
 
+const userInitialState = {
+    count: 1,
+    totalCount: 2,
+    isClicked: true
+}
+
 const Usage = () => {
     const [{clapRef, clapCountRef, clapTotalRef}, setAllRef] = useDOMRef();
-    const {clapState, updateClapState, getTogglerProps, getCounterProps} = useClapState();
+    const {clapState, updateClapState, getTogglerProps, getCounterProps, reset, resetDep} = useClapState(userInitialState);
 
     const {count, totalCount, isClicked} = clapState
     const animationTimeline = useClapAnimation({
@@ -193,16 +219,38 @@ const Usage = () => {
         },[count]
     )
 
-    return <ClapContainer setAllRef={setAllRef} id="clap-btn"  className={styles.clap}
-        {...getTogglerProps(
-            {
-                handleClick: handleClick,
-            }
-        )} data-refkey="clapRef">
+    const [uploadingReset, setUploadingReset] = React.useState(false);
+    useEffectAfterMount(()=>{
+        setUploadingReset(true)
+        const id = setTimeout(()=>{setUploadingReset(false)}, 3000)
+        return ()=>{
+            clearTimeout(id);
+        }
+    }, [resetDep])
+
+    return <div>
+    <ClapContainer setAllRef={setAllRef} id="clap-btn"  className={styles.clap}
+                          {...getTogglerProps(
+                              {
+                                  handleClick: handleClick,
+                              }
+                          )} data-refkey="clapRef">
         <ClapIcon isClicked={isClicked} setAllRef={setAllRef}/>
         <ClapCount setAllRef={setAllRef} data-refkey="clapCountRef" {...getCounterProps()}/>
         <ClapTotal totalCount={totalCount} setAllRef={setAllRef}  data-refkey="clapTotalRef"/>
     </ClapContainer>
+        <button onClick={reset} className={userStyles.resetBtn}>
+            reset
+        </button>
+        <pre className={userStyles.resetMsg}>
+            {JSON.stringify({count, totalCount, isClicked})}
+        </pre>
+          <pre className={userStyles.resetMsg}>
+            {uploadingReset?`Uploading  ${resetDep}....`:"" }
+        </pre>
+
+    </div>
+
 }
 
 export default Usage
