@@ -12,7 +12,8 @@ function App() {
             <button disabled={isDisabled} style={{backgroundColor: toggleButton? "red":"blue"}} onClick={handleClick}>
                 {toggleButton? "Change to Blue": "Change to Red" }
             </button>
-            <input type="checkbox" name="Disable Button" id="disableColorBtn" defaultChecked={isDisabled} onChange={(e)=>setIsDisabled(e.target.checked)}/>
+            <input type="checkbox" id="disableColorBtn" defaultChecked={isDisabled} onChange={(e)=>setIsDisabled(e.target.checked)}/>
+            <label htmlFor="disableColorBtn">Disable Button</label>
 
         </div>
     );

@@ -25,7 +25,7 @@ test("initial condition", ()=>{
 
 test("check box functionality: Clicking checkbox toggles button disabled ppt", ()=>{
   render(<App/>);
-  const checkBox = screen.getByRole("checkbox");
+  const checkBox = screen.getByRole("checkbox", {name: "Disable Button"});
   const colorButton = screen.getByRole("button", {name: 'Change to Blue'});
 
   expect(colorButton).toBeEnabled()
