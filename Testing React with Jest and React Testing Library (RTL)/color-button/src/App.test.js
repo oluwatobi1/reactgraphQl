@@ -47,15 +47,15 @@ test("btn turns grey on disable", ()=>{
 })
 
 
-// describe("Spaces before camel-case tests", ()=>{
-//   test("works for no spaces", ()=>{
-//     expect(replaceCamelCaseWithSpaces("Red")).toBe("Red");
-//   });
-//   test("works for one space", ()=>{
-//     expect(replaceCamelCaseWithSpaces("MidnightBlue")).toBe("Midnight Blue");
-//   });
-//
-//   test("Works for multiple spaces", ()=>{
-//     expect(replaceCamelCaseWithSpaces("MidnightVioletBlueColor")).toBe("Midnight Violet Blue Color");
-//   });
-// })
+describe("Spaces before camel-case tests", ()=>{
+  test("works for no spaces", ()=>{
+    expect(replaceCamelCaseWithSpaces("Red")).toBe("Red");
+  });
+  test("works for one space", ()=>{
+    expect(replaceCamelCaseWithSpaces("MidnightBlue")).toBe("Midnight Blue");
+  });
+
+  test("Works for multiple spaces", ()=>{
+    expect(replaceCamelCaseWithSpaces("MidnightVioletBlueColor")).toBe("Midnight Violet Blue Color");
+  });
+})
