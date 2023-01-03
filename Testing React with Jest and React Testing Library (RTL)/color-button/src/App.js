@@ -6,8 +6,8 @@ export const replaceCamelCaseWithSpaces = (colorName) => {
 }
 
 function App() {
-    const [toggleButtonColor, setToggleButtonColor] = useState("blue")
-    const btnColor = toggleButtonColor==="red"?"blue":"red"
+    const [toggleButtonColor, setToggleButtonColor] = useState("MidnightBlue")
+    const btnColor = toggleButtonColor==="MidnightVioletRed"?"MidnightBlue":"MidnightVioletRed"
     const [isDisabled, setIsDisabled] = useState(false);
     const handleClick = ()=>{
         setToggleButtonColor(btnColor)
@@ -15,7 +15,7 @@ function App() {
     return (
         <div className="App">
             <button disabled={isDisabled} style={{backgroundColor: isDisabled ? "gray":btnColor}} onClick={handleClick}>
-                {btnColor==="red"? "Change to Blue": "Change to Red" }
+                {btnColor==="MidnightVioletRed"? "Change to Midnight Blue": "Change to Midnight Violet Red" }
             </button>
             <input type="checkbox" id="disableColorBtn" defaultChecked={isDisabled} onChange={(e)=>setIsDisabled(e.target.checked)}/>
             <label htmlFor="disableColorBtn">Disable Button</label>
