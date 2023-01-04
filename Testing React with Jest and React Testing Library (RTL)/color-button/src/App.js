@@ -7,7 +7,7 @@ export const replaceCamelCaseWithSpaces = (colorName) => {
 
 function App() {
     const [toggleButtonColor, setToggleButtonColor] = useState("MidnightBlue")
-    const btnColor = toggleButtonColor==="MidnightVioletRed"?"MidnightBlue":"MidnightVioletRed"
+    const btnColor = toggleButtonColor==="MlsidnightVioletRed"?"MidnightBlue":"MidnightVioletRed"
     const [isDisabled, setIsDisabled] = useState(false);
     const handleClick = ()=>{
         setToggleButtonColor(btnColor)
