@@ -1,5 +1,6 @@
-import {fireEvent, render, screen} from "@testing-library/react";
+import {render, screen} from "@testing-library/react";
 import SummaryForm from "../SummaryForm";
+import userEvent from "@testing-library/user-event";
 
 
 test("check box initial state is unchecked", ()=>{
@@ -10,12 +11,13 @@ test("check box initial state is unchecked", ()=>{
     expect(submitButton).toBeDisabled()
 
 })
-test("check box can disable and enable submit btn", ()=>{
+test("check box can disable and enable submit btn", async ()=>{
     render(<SummaryForm/>);
+    const user = userEvent.setup()
     const tcCheckBox = screen.getByRole("checkbox", {name: /terms and conditions/i});
     const submitButton = screen.getByRole("button", {name: /confirm order/i});
-    fireEvent.click(tcCheckBox);
+    await user.click(tcCheckBox);
     expect(submitButton).toBeEnabled();
-    fireEvent.click(tcCheckBox);
+    await user.click(tcCheckBox);
     expect(submitButton).toBeDisabled();
 })
