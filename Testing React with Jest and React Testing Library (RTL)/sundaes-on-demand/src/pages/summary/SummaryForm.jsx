@@ -1,15 +1,29 @@
 import React, {useState} from 'react';
-import {Form, Button} from "react-bootstrap";
+import {Button, Form} from "react-bootstrap";
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 function SummaryForm(props) {
     const [canSubmit, setCanSubmit] = useState(false);
+
+    const renderTooltip = (props) => (
+        <Tooltip id="button-tooltip" {...props}>
+            No ice cream will actually be delivered
+        </Tooltip>
+    );
     const CheckBoxLabel = (
         <span>
             i agree to
-            <span style={{color:"blue"}}>
-            Terms and Conditions
+             <OverlayTrigger
+                 placement="right"
+                 overlay={renderTooltip}
+             >
+                 <span style={{color: "blue"}}>
+                     Terms and Conditions
+                 </span>
+             </OverlayTrigger>
         </span>
-        </span>
+
     )
     return (
         <Form>
