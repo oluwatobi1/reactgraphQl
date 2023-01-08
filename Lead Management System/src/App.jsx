@@ -1,13 +1,11 @@
-import {
-    RouterProvider,
-} from "react-router-dom";
-import appRouter from "./routes/index.jsx";
+import LeadManagement from "./views/leadManagement/index.jsx";
+
 
 function App() {
 
   return (
     <>
-        <RouterProvider router={appRouter} />
+        <LeadManagement/>
     </>
   )
 }
