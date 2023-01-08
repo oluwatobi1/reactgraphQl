@@ -8,10 +8,6 @@
     text-align: center;
 }
 
-html, body {
-    height: 100%;
-    text-align: center;
-}
 
 body {
     padding: 2rem;
@@ -48,7 +44,6 @@ p {
 
 
 .uploader label {
-    float: left;
     clear: both;
     width: 100%;
     padding: 2rem 1.5rem;
@@ -183,4 +178,7 @@ div {
     background: #454cad;
     border-color: #454cad;
     cursor: pointer;
+}
+.btn:disabled{
+    background: #797981;
 }
