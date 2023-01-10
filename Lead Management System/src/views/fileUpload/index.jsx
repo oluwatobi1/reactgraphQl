@@ -4,7 +4,11 @@ import FileUpload from "./FileUpload.jsx";
 import {Form} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 
+import routes from "../../routes/routes.js";
+import {useNavigate} from "react-router-dom";
+
 function Index() {
+    const navigate = useNavigate()
     const [compulsoryFields, setCompulsoryFields] = React.useState({
         name: "",
         mobileNumber: "",
@@ -18,6 +22,10 @@ function Index() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        // for test
+        navigate(routes.dashboard)
+        return
+
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
             let list = form.querySelectorAll(':invalid');
@@ -28,14 +36,25 @@ function Index() {
             }
             event.stopPropagation();
         }else{
-            await sendUploadRequest()
+            try{
+                // await sendUploadRequest()
+
+            }catch (e) {
+                console.log("Error", e)
+            }
+            finally {
+                //testing purpose
+                console.log("finally")
+            }
+
         }
         setValidated(true);
     };
 
     const sendUploadRequest = async () => {
         let payload = new FormData()
-        payload.append('file', csvFile.files[0])
+        console.log("cvs", csvFile)
+        payload.append('file', csvFile)
         payload.append('data', {...compulsoryFields, extra_fields: extraFields})
         await fetch('', {
             method: 'POST',

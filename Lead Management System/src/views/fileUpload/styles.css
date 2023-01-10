@@ -150,10 +150,7 @@ input[type="file"] {
     display: none;
 }
 
-div {
-    margin: 0 0 .5rem 0;
-    color: #5f6982;
-}
+
 
 .btn {
     display: inline-block;
