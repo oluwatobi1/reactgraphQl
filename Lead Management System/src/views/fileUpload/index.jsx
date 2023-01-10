@@ -1,6 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import FileUpload from "./fileUpload/FileUpload.jsx";
+import FileUpload from "./FileUpload.jsx";
 import {Form} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 

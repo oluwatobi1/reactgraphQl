@@ -1,14 +1,15 @@
-import LeadManagement from "./views/leadManagement/index.jsx";
-
-import "@silevis/reactgrid/styles.css";
+import {
+    RouterProvider,
+} from "react-router-dom";
+import appRouter from "./routes/index.jsx";
 
 function App() {
 
-  return (
-    <>
-        <LeadManagement/>
-    </>
-  )
+    return (
+        <>
+            <RouterProvider router={appRouter} />
+        </>
+    )
 }
 
 export default App
