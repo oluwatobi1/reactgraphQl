@@ -24,9 +24,6 @@ function Index() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        // for test
-        // navigate(routes.dashboard)
-        // return
 
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
@@ -40,7 +37,12 @@ function Index() {
         } else {
             try {
                 const taskID = await sendUploadRequest()
-                setUploadTaskID(taskID)
+                navigate(routes.dashboard, {
+                    state: {
+                        taskID: taskID
+                    }
+                })
+
             } catch (e) {
                 console.log("Error", e)
             } finally {
@@ -53,42 +55,20 @@ function Index() {
 
     const sendUploadRequest = async () => {
         let payload = new FormData()
-        payload.append('File', csvFile)
-        payload.append('data', {...compulsoryFields, extra_fields: extraFields})
+        console.log("csv", csvFile)
+        payload.append('file', csvFile)
+        payload.append('data', JSON.stringify({...compulsoryFields, extra_fields: extraFields}))
         const uploadRequest = await API.post("leads", payload)
-        return uploadRequest.data.task_id
+        const data = await uploadRequest.json()
+        return data.task_id
     }
+
 
     const handleInputChange = (index, event) => {
         const values = [...extraFields];
         values[index] = event.target.value;
         setExtraFields(values);
     };
-    const handleFetchRequestStatus = async () => {
-        try {
-            const res = await API.get(`/leads/${uploadTaskID}`)
-            if (res.message === "successful") {
-                let temp = uploadTaskID
-                setUploadTaskID(null)
-                navigate(routes.dashboard, {
-                    state: {
-                        task_id: temp
-                    }
-                })
-            }
-        } catch (e) {
-            console.log("an error occured")
-        }
-    }
-
-    React.useEffect(() => {
-        if (!uploadTaskID) return;
-        const intervalId = setInterval(async () => {  //assign interval to a variable to clear it.
-            handleFetchRequestStatus().then()
-        }, 1000)
-        return () => clearInterval(intervalId);
-    }, [uploadTaskID]);
-
 
     return (
         <>

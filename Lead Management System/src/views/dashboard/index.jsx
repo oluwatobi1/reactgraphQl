@@ -13,7 +13,8 @@ function index() {
                 Upload New data
             </Button>
 
-            <CsvTable/></>
+            <CsvTable/>
+        </>
     );
 }
 

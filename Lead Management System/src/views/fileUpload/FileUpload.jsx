@@ -11,10 +11,10 @@ function FileUpload({error, setError, csvFile, setCsvFile}) {
                        accept=".xlsx, .xls, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, text/plain"
                        required
                        onChange={(e) => {
-                           const file = e.target.files;
+                           const file = e.target.files[0];
                            setError(false)
                            console.log("files", file);
-                           if (!file.length) return;
+                           if (!file) return;
                            setCsvFile(file)
                        }}
                        onClick={(event) => {
@@ -26,7 +26,7 @@ function FileUpload({error, setError, csvFile, setCsvFile}) {
                         <i className="fa fa-download" aria-hidden="true"></i>
                         <div>Select a file</div>
                         <span id="file-upload-btn" className="btn btn-primary">Select a file</span>
-                        {csvFile && <p>{csvFile[0]?.name}</p>}
+                        {csvFile && <p>{csvFile?.name}</p>}
                     </div>
                     <div id="response" className="hidden">
                         <div id="messages"></div>
