@@ -6,6 +6,7 @@ import Button from "react-bootstrap/Button";
 
 import routes from "../../routes/routes.js";
 import {useNavigate} from "react-router-dom";
+import API from "../api/index.js";
 
 function Index() {
     const navigate = useNavigate()
@@ -15,6 +16,7 @@ function Index() {
         status: ""
     });
     const [extraFields, setExtraFields] = React.useState([]);
+    const [uploadTaskID, setUploadTaskID] = React.useState(null);
 
     const [csvFile, setCsvFile] = React.useState(null);
     const [fileValidation, setFileValidation] = React.useState(false);
@@ -23,43 +25,38 @@ function Index() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         // for test
-        navigate(routes.dashboard)
-        return
+        // navigate(routes.dashboard)
+        // return
 
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
             let list = form.querySelectorAll(':invalid');
-            if (list[0].name === "fileUpload"){
+            if (list[0].name === "fileUpload") {
                 setFileValidation(true)
-            }else {
+            } else {
                 setFileValidation(false)
             }
             event.stopPropagation();
-        }else{
-            try{
-                // await sendUploadRequest()
-
-            }catch (e) {
+        } else {
+            try {
+                const taskID = await sendUploadRequest()
+                setUploadTaskID(taskID)
+            } catch (e) {
                 console.log("Error", e)
-            }
-            finally {
+            } finally {
                 //testing purpose
                 console.log("finally")
             }
-
         }
         setValidated(true);
     };
 
     const sendUploadRequest = async () => {
         let payload = new FormData()
-        console.log("cvs", csvFile)
-        payload.append('file', csvFile)
+        payload.append('File', csvFile)
         payload.append('data', {...compulsoryFields, extra_fields: extraFields})
-        await fetch('', {
-            method: 'POST',
-            body: payload
-        })
+        const uploadRequest = await API.post("leads", payload)
+        return uploadRequest.data.task_id
     }
 
     const handleInputChange = (index, event) => {
@@ -67,11 +64,38 @@ function Index() {
         values[index] = event.target.value;
         setExtraFields(values);
     };
+    const handleFetchRequestStatus = async () => {
+        try {
+            const res = await API.get(`/leads/${uploadTaskID}`)
+            if (res.message === "successful") {
+                let temp = uploadTaskID
+                setUploadTaskID(null)
+                navigate(routes.dashboard, {
+                    state: {
+                        task_id: temp
+                    }
+                })
+            }
+        } catch (e) {
+            console.log("an error occured")
+        }
+    }
+
+    React.useEffect(() => {
+        if (!uploadTaskID) return;
+        const intervalId = setInterval(async () => {  //assign interval to a variable to clear it.
+            handleFetchRequestStatus().then()
+        }, 1000)
+        return () => clearInterval(intervalId);
+    }, [uploadTaskID]);
+
+
     return (
         <>
-            <h2  style={{textAlign:"center", marginBottom:"1rem"}}> Lead Management System</h2>
+            <h2 style={{textAlign: "center", marginBottom: "1rem"}}> Lead Management System</h2>
             <Form className="form-container" noValidate validated={validated} onSubmit={handleSubmit}>
-                <FileUpload error={fileValidation}  setError={setFileValidation} csvFile={csvFile} setCsvFile={setCsvFile}/>
+                <FileUpload error={fileValidation} setError={setFileValidation} csvFile={csvFile}
+                            setCsvFile={setCsvFile}/>
                 <Form.Group className="mb-3" controlId="formBasicName">
                     <Form.Label>Name Mapper</Form.Label>
                     <Form.Control
@@ -99,7 +123,7 @@ function Index() {
                     </Form.Select>
                 </Form.Group>
 
-                {extraFields.length>0 &&<Form.Label>Extra Fields</Form.Label>}
+                {extraFields.length > 0 && <Form.Label>Extra Fields</Form.Label>}
 
                 {
                     extraFields.map((inputField, idx) => (
