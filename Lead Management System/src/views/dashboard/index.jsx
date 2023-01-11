@@ -12,6 +12,7 @@ function index() {
             <Button onClick={()=>navigate(routes.home)}>
                 Upload New data
             </Button>
+
             <CsvTable/></>
     );
 }

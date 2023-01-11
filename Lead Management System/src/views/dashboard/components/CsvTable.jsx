@@ -3,8 +3,11 @@ import {useState} from "react"
 import "@silevis/reactgrid/styles.css";
 import {headers} from "./MockData/mockHeader.js";
 import MOCKDATA from "./MockData/lead_MOCK_DATA.json"
+import {toast} from "react-toastify";
+import {COMPLETED_CONST, tableDropDownConstant} from "../constants.js";
 
 
+const customToastId = "custom-id-yes";
 const getTableData = () => MOCKDATA
 
 const getColumns = () => [
@@ -21,22 +24,18 @@ const headerRow = {
 };
 
 
-const getRows = (people) => [
+const getRows = (allData) => [
     headerRow,
-    ...people.map((currRow, idx) => ({
+    ...allData.map((currRow, idx) => ({
+
         rowId: idx,
         cells: [
             {type: "number", value: idx+1},
             {
                 type: "dropdown",
                 selectedValue: currRow.status,
-                inputValue: currRow.status,
                 isOpen: currRow.isOpen === true,
-                values: [
-                    {label: "Open", value: "Open"},
-                    {label: "Pending", value: "Pending"},
-                    {label: "Completed", value: "Completed"},
-                ]
+                values:tableDropDownConstant
             },
             ...headers.filter(e=>e!=="status").map(e => ({type: "text", text: currRow[e]}))
 
@@ -53,9 +52,17 @@ const applyChangesToPeople = (
         const fieldName = change.columnId;
         let dataRow = prevDetails.find((d) => d.id - 1 === dataRowId);
         if (change.type === "dropdown") {
-            dataRow[fieldName] = change.newCell.inputValue
-            // CHANGED: set the isOpen property to the value received.
+            let prevCellVal = change.previousCell.selectedValue
+            let newCellVal = change.newCell.selectedValue
             dataRow.isOpen = change.newCell.isOpen
+            if (prevCellVal!==newCellVal){
+                if (newCellVal === COMPLETED_CONST){
+                    toast.success(`Status Change to ${change.newCell.selectedValue}`,{
+                        toastId: customToastId
+                    })
+                }
+                 dataRow[fieldName] = change.newCell.inputValue
+            }
         } else {
             console.log("ERROR", change.type, dataRow[fieldName]);
         }
@@ -65,15 +72,12 @@ const applyChangesToPeople = (
 
 
 function CsvTable() {
-    const [people, setPeople] = useState(getTableData());
+    const [tableData, setTableData] = useState(getTableData());
     const [columns, setColumns] = useState(getColumns());
-
-    const rows = getRows(people);
-
+    const rows = getRows(tableData);
     const handleChanges = (changes) => {
-        setPeople((prevPeople) => applyChangesToPeople(changes, prevPeople));
+        setTableData((prevData) => applyChangesToPeople(changes, prevData));
     };
-
     const handleColumnResize = (ci, width) => {
         setColumns((prevColumns) => {
             const columnIndex = prevColumns.findIndex(el => el.columnId === ci);
@@ -86,7 +90,10 @@ function CsvTable() {
 
 
     return (
-        <ReactGrid rows={rows} columns={columns} onCellsChanged={handleChanges} onColumnResized={handleColumnResize}/>
+        <>
+            <ReactGrid rows={rows} columns={columns} onCellsChanged={handleChanges} onColumnResized={handleColumnResize}/>
+
+        </>
     );
 }
 
