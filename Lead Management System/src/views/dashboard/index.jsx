@@ -7,12 +7,10 @@ import {useNavigate} from "react-router-dom";
 function index() {
     const navigate = useNavigate()
     return (
-
         <>
-            <Button onClick={()=>navigate(routes.home)}>
+            <Button onClick={() => navigate(routes.home)}>
                 Upload New data
             </Button>
-
             <CsvTable/>
         </>
     );

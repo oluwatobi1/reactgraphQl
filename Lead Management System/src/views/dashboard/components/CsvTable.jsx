@@ -114,7 +114,6 @@ function CsvTable() {
             setLoading(true)
             const request = await API.get(`leads/${uploadedTaskID}`)
             const res = await request.json()
-            console.log("result", res)
             if (res.message === "successful") {
                 setIsDataReady(true)
                 setTableData(res.data)
@@ -134,7 +133,6 @@ function CsvTable() {
     }
 
     useEffect(() => {
-        console.log("triggerd", isDataReady)
         if (isDataReady) {
             // stop fetch check
             clearInterval()
@@ -148,11 +146,12 @@ function CsvTable() {
 
 
     return (
-        <div style={{display:"flex", alignItems:"center", flexDirection:"column"}}>
-            <ReactGrid rows={rows} columns={columns} onCellsChanged={handleChanges}
-                       onColumnResized={handleColumnResize}/>
-            {loading && <LoaderUI/>}
-        </div>
+        <>
+            {loading ? <LoaderUI/> :
+                <ReactGrid rows={rows} columns={columns} onCellsChanged={handleChanges}
+                           onColumnResized={handleColumnResize}/>
+            }</>
+
     );
 }
 

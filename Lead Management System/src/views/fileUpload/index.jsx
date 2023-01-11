@@ -3,10 +3,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import FileUpload from "./FileUpload.jsx";
 import {Form} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
-
 import routes from "../../routes/routes.js";
 import {useNavigate} from "react-router-dom";
 import API from "../api/index.js";
+import {toast} from "react-toastify";
 
 function Index() {
     const navigate = useNavigate()
@@ -16,15 +16,12 @@ function Index() {
         status: ""
     });
     const [extraFields, setExtraFields] = React.useState([]);
-    const [uploadTaskID, setUploadTaskID] = React.useState(null);
-
     const [csvFile, setCsvFile] = React.useState(null);
     const [fileValidation, setFileValidation] = React.useState(false);
     const [validated, setValidated] = React.useState(false);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
             let list = form.querySelectorAll(':invalid');
@@ -37,17 +34,16 @@ function Index() {
         } else {
             try {
                 const taskID = await sendUploadRequest()
-                navigate(routes.dashboard, {
-                    state: {
-                        taskID: taskID
-                    }
-                })
-
+                if (taskID) {
+                    navigate(routes.dashboard, {
+                        state: {
+                            taskID: taskID
+                        }
+                    })
+                }
             } catch (e) {
                 console.log("Error", e)
-            } finally {
-                //testing purpose
-                console.log("finally")
+                toast.error(e.message)
             }
         }
         setValidated(true);
@@ -55,20 +51,17 @@ function Index() {
 
     const sendUploadRequest = async () => {
         let payload = new FormData()
-        console.log("csv", csvFile)
         payload.append('file', csvFile)
         payload.append('data', JSON.stringify({...compulsoryFields, extra_fields: extraFields}))
+        let data;
         const uploadRequest = await API.post("leads", payload)
-        const data = await uploadRequest.json()
+        if (uploadRequest.status == 400) {
+            toast.info("Upload only Allowed from 9AM to 6PM IST")
+            return
+        }
+        data = await uploadRequest.json()
         return data.task_id
     }
-
-
-    const handleInputChange = (index, event) => {
-        const values = [...extraFields];
-        values[index] = event.target.value;
-        setExtraFields(values);
-    };
 
     return (
         <>
@@ -76,55 +69,55 @@ function Index() {
             <Form className="form-container" noValidate validated={validated} onSubmit={handleSubmit}>
                 <FileUpload error={fileValidation} setError={setFileValidation} csvFile={csvFile}
                             setCsvFile={setCsvFile}/>
-                <Form.Group className="mb-3" controlId="formBasicName">
-                    <Form.Label>Name Mapper</Form.Label>
-                    <Form.Control
-                        required
-                        onChange={(e) => setCompulsoryFields(prev => ({...prev, name: e.target.value}))}
-                        type="text"/>
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="formPhone">
-                    <Form.Label>Mobile Number Mapper</Form.Label>
-                    <Form.Control
-                        required
-                        onChange={(e) => setCompulsoryFields(prev => ({...prev, mobileNumber: e.target.value}))}
-                        type="text"/>
-                </Form.Group>
+                {/*<Form.Group className="mb-3" controlId="formBasicName">*/}
+                {/*    <Form.Label>Name Mapper</Form.Label>*/}
+                {/*    <Form.Control*/}
+                {/*        required*/}
+                {/*        onChange={(e) => setCompulsoryFields(prev => ({...prev, name: e.target.value}))}*/}
+                {/*        type="text"/>*/}
+                {/*</Form.Group>*/}
+                {/*<Form.Group className="mb-3" controlId="formPhone">*/}
+                {/*    <Form.Label>Mobile Number Mapper</Form.Label>*/}
+                {/*    <Form.Control*/}
+                {/*        required*/}
+                {/*        onChange={(e) => setCompulsoryFields(prev => ({...prev, mobileNumber: e.target.value}))}*/}
+                {/*        type="text"/>*/}
+                {/*</Form.Group>*/}
 
-                <Form.Group className="mb-3" controlId="formStatus">
-                    <Form.Label>Status</Form.Label>
-                    <Form.Select
-                        required aria-label="Default select example"
-                        onChange={(e) => setCompulsoryFields(prev => ({...prev, status: e.target.value}))}>
-                        <option value="">...</option>
-                        <option value="opening">Opening</option>
-                        <option value="pending">Pending</option>
-                        <option value="completed">Completed</option>
-                    </Form.Select>
-                </Form.Group>
+                {/*<Form.Group className="mb-3" controlId="formStatus">*/}
+                {/*    <Form.Label>Status</Form.Label>*/}
+                {/*    <Form.Select*/}
+                {/*        required aria-label="Default select example"*/}
+                {/*        onChange={(e) => setCompulsoryFields(prev => ({...prev, status: e.target.value}))}>*/}
+                {/*        <option value="">...</option>*/}
+                {/*        <option value="opening">Opening</option>*/}
+                {/*        <option value="pending">Pending</option>*/}
+                {/*        <option value="completed">Completed</option>*/}
+                {/*    </Form.Select>*/}
+                {/*</Form.Group>*/}
 
-                {extraFields.length > 0 && <Form.Label>Extra Fields</Form.Label>}
+                {/*{extraFields.length > 0 && <Form.Label>Extra Fields</Form.Label>}*/}
 
-                {
-                    extraFields.map((inputField, idx) => (
-                        <Form.Group key={idx} className="mb-3" controlId={`formStatus` + idx}>
-                            <Form.Control onChange={e => handleInputChange(idx, e)} type="text"/>
-                        </Form.Group>))
-                }
-                <Button variant="secondary" onClick={() => {
-                    setExtraFields(prevState => ([...prevState, ""]))
-                }}>
-                    Add Extra Fields
-                </Button>
-                {extraFields.length > 0 && <Button variant="danger" style={{backgroundColor: "red"}} onClick={() => {
-                    setExtraFields(prevState => {
-                        const temp = [...prevState]
-                        temp.splice(temp.length - 1, 1)
-                        return temp
-                    })
-                }}>
-                    Delete
-                </Button>}
+                {/*{*/}
+                {/*    extraFields.map((inputField, idx) => (*/}
+                {/*        <Form.Group key={idx} className="mb-3" controlId={`formStatus` + idx}>*/}
+                {/*            <Form.Control onChange={e => handleInputChange(idx, e)} type="text"/>*/}
+                {/*        </Form.Group>))*/}
+                {/*}*/}
+                {/*<Button variant="secondary" onClick={() => {*/}
+                {/*    setExtraFields(prevState => ([...prevState, ""]))*/}
+                {/*}}>*/}
+                {/*    Add Extra Fields*/}
+                {/*</Button>*/}
+                {/*{extraFields.length > 0 && <Button variant="danger" style={{backgroundColor: "red"}} onClick={() => {*/}
+                {/*    setExtraFields(prevState => {*/}
+                {/*        const temp = [...prevState]*/}
+                {/*        temp.splice(temp.length - 1, 1)*/}
+                {/*        return temp*/}
+                {/*    })*/}
+                {/*}}>*/}
+                {/*    Delete*/}
+                {/*</Button>}*/}
 
                 <div className="d-grid gap-2">
                     <Button variant="primary" type="submit" size="lg">

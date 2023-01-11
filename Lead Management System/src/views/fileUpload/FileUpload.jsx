@@ -5,7 +5,6 @@ function FileUpload({error, setError, csvFile, setCsvFile}) {
 
     return (
         <div>
-
             <span id="file-upload-form" className="uploader">
                 <input id="file-upload" type="file" name="fileUpload"
                        accept=".xlsx, .xls, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, text/plain"
@@ -20,7 +19,6 @@ function FileUpload({error, setError, csvFile, setCsvFile}) {
                        onClick={(event) => {
                            event.target.value = null
                        }}/>
-
                 <label htmlFor="file-upload" id="file-drag" style={error?{borderColor:"red"}:{}}>
                     <div id="start">
                         <i className="fa fa-download" aria-hidden="true"></i>

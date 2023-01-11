@@ -1,7 +1,6 @@
 const BASE_URL = "https://api-clag.onrender.com/"
 
 class API {
-
     static async get(url) {
         return await fetch(BASE_URL+url, {
             method: 'GET',
@@ -14,6 +13,5 @@ class API {
             body: payload,
         })
     }
-    
 }
 export default API;

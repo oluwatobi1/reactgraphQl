@@ -3,7 +3,7 @@ import {Spinner} from "react-bootstrap";
 
 function LoaderUi() {
     return (
-        <div style={{marginTop:"5rem"}}>
+        <div style={{marginTop:"5rem", textAlign:"center"}}>
             <Spinner animation="grow"/>
 
             <Spinner animation="border" role="status">
