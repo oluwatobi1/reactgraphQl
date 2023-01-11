@@ -26,7 +26,7 @@ const getRows = (people) => [
     ...people.map((currRow, idx) => ({
         rowId: idx,
         cells: [
-            {type: "number", value: currRow.id},
+            {type: "number", value: idx+1},
             {
                 type: "dropdown",
                 selectedValue: currRow.status,
@@ -52,7 +52,6 @@ const applyChangesToPeople = (
         const dataRowId = change.rowId;
         const fieldName = change.columnId;
         let dataRow = prevDetails.find((d) => d.id - 1 === dataRowId);
-        console.log("cha", change, dataRow)
         if (change.type === "dropdown") {
             dataRow[fieldName] = change.newCell.inputValue
             // CHANGED: set the isOpen property to the value received.
