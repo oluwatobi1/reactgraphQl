@@ -12,7 +12,6 @@ function FileUpload({error, setError, csvFile, setCsvFile}) {
                        onChange={(e) => {
                            const file = e.target.files[0];
                            setError(false)
-                           console.log("files", file);
                            if (!file) return;
                            setCsvFile(file)
                        }}
@@ -25,12 +24,6 @@ function FileUpload({error, setError, csvFile, setCsvFile}) {
                         <div>Select a file</div>
                         <span id="file-upload-btn" className="btn btn-primary">Select a file</span>
                         {csvFile && <p>{csvFile?.name}</p>}
-                    </div>
-                    <div id="response" className="hidden">
-                        <div id="messages"></div>
-                        <progress className="progress" id="file-progress" value="0">
-                            <span>0</span>%
-                        </progress>
                     </div>
                 </label>
 

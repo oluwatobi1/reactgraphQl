@@ -20,7 +20,6 @@ export const headers = [
     "pipelines"
 ]
 const customToastId = "custom-id-yes";
-const getTableData = () => MOCKDATA
 
 const getColumns = () => [
 
@@ -34,7 +33,6 @@ const headerRow = {
     cells: [{type: "header", text: "ID"}, {type: "header", text: "status"},
         ...headers.filter(e => e !== "status").map(e => ({type: "header", text: e}))]
 };
-
 
 const getRows = (allData) => [
     headerRow,
@@ -55,7 +53,7 @@ const getRows = (allData) => [
     }))
 ];
 
-const applyChangesToPeople = (
+const applyChangesToDataTable = (
     changes,
     prevDetails
 ) => {
@@ -82,7 +80,6 @@ const applyChangesToPeople = (
     return [...prevDetails];
 };
 
-
 function CsvTable() {
     const location = useLocation();
     const navigate = useNavigate()
@@ -92,7 +89,7 @@ function CsvTable() {
     const [isDataReady, setIsDataReady] = useState(false);
     const rows = getRows(tableData);
     const handleChanges = (changes) => {
-        setTableData((prevData) => applyChangesToPeople(changes, prevData));
+        setTableData((prevData) => applyChangesToDataTable(changes, prevData));
     };
     const handleColumnResize = (ci, width) => {
         setColumns((prevColumns) => {
@@ -103,7 +100,6 @@ function CsvTable() {
             return [...prevColumns];
         });
     }
-
 
     const handleFetchRequestStatus = async () => {
         const uploadedTaskID = location.state.taskID
@@ -129,15 +125,15 @@ function CsvTable() {
             console.log("an error occurred")
             setLoading(false)
         }
-
     }
 
     useEffect(() => {
         if (isDataReady) {
-            // stop fetch check
+            // stop fetch check when response is returned
             clearInterval()
             return;
         }
+        // send status check request per minute
         const intervalId = setInterval(async () => {  //assign interval to a variable to clear it.
             handleFetchRequestStatus().then()
         }, 1000)
