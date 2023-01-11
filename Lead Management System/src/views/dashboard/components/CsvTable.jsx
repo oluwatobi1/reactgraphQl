@@ -1,59 +1,72 @@
 import {ReactGrid} from "@silevis/reactgrid";
 import {useState} from "react"
 import "@silevis/reactgrid/styles.css";
+import {headers} from "./MockData/mockHeader.js";
+import MOCKDATA from "./MockData/lead_MOCK_DATA.json"
 
 
-const getPeople = () => [
-    { name: "Thomas", mobileNumber:"1258832792", status:"Completed" },
-    { name: "Susie", mobileNumber:"984372792", status:"Pending"   },
-    { name: "", mobileNumber:"923322792", status:"Open"  }
-];
+const getTableData = () => MOCKDATA
 
-const getColumns = ()=> [
-    { columnId: "name", width: 150, resizable: true  },
-    { columnId: "mobileNumber", width: 150, resizable: true  },
-    { columnId: "status", width: 150, resizable: true  },
-];
+const getColumns = () => [
 
-const headerRow= {
+    {columnId: "id", width: 50, resizable: true},
+    {columnId: "status", width: 150, resizable: true},
+    ...headers.filter(e=>e!=="status").map(e => ({columnId: e, width: 100, resizable: true}))
+]
+
+const headerRow = {
     rowId: "header",
-    cells: [
-        { type: "header", text: "Name" },
-        { type: "header", text: "Mobile Number" },
-        { type: "header", text: "Status" },
-    ]
+    cells: [{type: "header", text: "ID"},{type: "header", text: "status"},
+        ...headers.filter(e=>e!=="status").map(e => ({type: "header", text: e}))]
 };
 
 
-const getRows = (people)=> [
+const getRows = (people) => [
     headerRow,
-    ...people.map((person, idx) => ({
+    ...people.map((currRow, idx) => ({
         rowId: idx,
         cells: [
-            { type: "text", text: person.name },
-            { type: "text", text: person.mobileNumber },
-            { type: "dropdown", text: person.status,
-                values: ["Completed"]
+            {type: "number", value: currRow.id},
+            {
+                type: "dropdown",
+                selectedValue: currRow.status,
+                inputValue: currRow.status,
+                isOpen: currRow.isOpen === true,
+                values: [
+                    {label: "Open", value: "Open"},
+                    {label: "Pending", value: "Pending"},
+                    {label: "Completed", value: "Completed"},
+                ]
             },
+            ...headers.filter(e=>e!=="status").map(e => ({type: "text", text: currRow[e]}))
+
         ]
     }))
 ];
 
 const applyChangesToPeople = (
-        changes,
-    prevPeople
-)=> {
+    changes,
+    prevDetails
+) => {
     changes.forEach((change) => {
-        const personIndex = change.rowId;
+        const dataRowId = change.rowId;
         const fieldName = change.columnId;
-        prevPeople[personIndex][fieldName] = change.newCell.text;
+        let dataRow = prevDetails.find((d) => d.id - 1 === dataRowId);
+        console.log("cha", change, dataRow)
+        if (change.type === "dropdown") {
+            dataRow[fieldName] = change.newCell.inputValue
+            // CHANGED: set the isOpen property to the value received.
+            dataRow.isOpen = change.newCell.isOpen
+        } else {
+            console.log("ERROR", change.type, dataRow[fieldName]);
+        }
     });
-    return [...prevPeople];
+    return [...prevDetails];
 };
 
 
-function CsvTable(pops) {
-    const [people, setPeople] = useState(getPeople());
+function CsvTable() {
+    const [people, setPeople] = useState(getTableData());
     const [columns, setColumns] = useState(getColumns());
 
     const rows = getRows(people);
@@ -66,17 +79,15 @@ function CsvTable(pops) {
         setColumns((prevColumns) => {
             const columnIndex = prevColumns.findIndex(el => el.columnId === ci);
             const resizedColumn = prevColumns[columnIndex];
-            const updatedColumn = { ...resizedColumn, width };
+            const updatedColumn = {...resizedColumn, width};
             prevColumns[columnIndex] = updatedColumn;
             return [...prevColumns];
         });
     }
 
 
-
-
     return (
-        <ReactGrid rows={rows} columns={columns}  onColumnResized={handleColumnResize}  />
+        <ReactGrid rows={rows} columns={columns} onCellsChanged={handleChanges} onColumnResized={handleColumnResize}/>
     );
 }
 
