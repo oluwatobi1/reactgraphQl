@@ -7,9 +7,11 @@ import routes from "../../routes/routes.js";
 import {useNavigate} from "react-router-dom";
 import API from "../api/index.js";
 import {toast} from "react-toastify";
+import LoaderUI from "../dashboard/components/LoaderUI";
 
 function Index() {
     const navigate = useNavigate()
+    const [loading, setLoading] = React.useState(false);
     const [compulsoryFields, setCompulsoryFields] = React.useState({
         name: "",
         mobileNumber: "",
@@ -33,6 +35,7 @@ function Index() {
             event.stopPropagation();
         } else {
             try {
+                setLoading(true)
                 const taskID = await sendUploadRequest()
                 if (taskID) {
                     navigate(routes.dashboard, {
@@ -41,9 +44,12 @@ function Index() {
                         }
                     })
                 }
+                setLoading(false)
             } catch (e) {
                 console.log("Error", e)
                 toast.error(e.message)
+            }finally {
+                setLoading(false)
             }
         }
         setValidated(true);
@@ -70,7 +76,8 @@ function Index() {
                 <FileUpload error={fileValidation} setError={setFileValidation} csvFile={csvFile}
                             setCsvFile={setCsvFile}/>
                 <div className="d-grid gap-2">
-                    <Button variant="primary" type="submit" size="lg">
+                    {loading && <LoaderUI/>}
+                    <Button variant="primary" type="submit" size="lg" disabled={loading}>
                         Submit
                     </Button>
                 </div>
